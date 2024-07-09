@@ -56,10 +56,12 @@ Request Body :
 
 ```json
 {
-  "title": "Lemon cheesecake",
-  "description": "A cheesecake made of lemon",
-  "rating": 7,
-  "image": "https://img.taste.com.au/ynYrqkOs/w720-h480-cfill-q80/taste/2016/11/sunny-lemon-cheesecake-102220-1.jpeg"
+  "data": {
+        "title": "Lemon cheesecake",
+      "description": "A cheesecake made of lemon",
+      "rating": 7,
+      "image": "https://img.taste.com.au/ynYrqkOs/w720-h480-cfill-q80/taste/2016/11/sunny-lemon-cheesecake-102220-1.jpeg"
+    }
 }
 ```
 
@@ -86,10 +88,12 @@ Request Body :
 
 ```json
 {
-  "title": "Lemon cheesecake",
-  "description": "A cheesecake made of lemon",
-  "rating": 7,
-  "image": "https://img.taste.com.au/ynYrqkOs/w720-h480-cfill-q80/taste/2016/11/sunny-lemon-cheesecake-102220-1.jpeg"
+  "data": {
+        "title": "Lemon cheesecake",
+        "description": "A cheesecake made of lemon",
+          "rating": 7,
+          "image": "https://img.taste.com.au/ynYrqkOs/w720-h480-cfill-q80/taste/2016/11/sunny-lemon-cheesecake-102220-1.jpeg"
+    }
 }
 ```
 
