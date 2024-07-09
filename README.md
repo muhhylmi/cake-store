@@ -2,7 +2,10 @@
 Hello this is Cake Store API build with golang 
 
 ## How to Run The Project
-- soon
+- ### Run Database Migrations
+    - Create Database
+    - run `migrate -database "mysql://user:password@tcp(host:port)/db-name" -path migrations up`
+- 
 
 ## List Cake
 
