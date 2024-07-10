@@ -49,14 +49,18 @@ func setupRouter(db *sql.DB, config *config.Configurations) http.Handler {
 	return middleware.NewAuthMiddleware(router, config)
 }
 
-func truncateCategory(db *sql.DB) {
+func truncateCake(db *sql.DB) {
 	db.Exec("TRUNCATE cakes")
+}
+
+func createCake(db *sql.DB) {
+	db.Exec("insert into cakes(id, title,description,rating,image) values (100, 'test cake', 'mantap', 8.5, 'image.jpg')")
 }
 
 func TestCakeSuccess(t *testing.T) {
 	config := config.GetConfig()
 	db := setupTestDB(config)
-	truncateCategory(db)
+	truncateCake(db)
 
 	router := setupRouter(db, config)
 	requestBody := strings.NewReader(`{"title": "test cake","description":"test","image":"test.jpg","rating":8}`)
@@ -83,7 +87,7 @@ func TestCakeSuccess(t *testing.T) {
 func TestCreateCakeFailed(t *testing.T) {
 	config := config.GetConfig()
 	db := setupTestDB(config)
-	truncateCategory(db)
+	truncateCake(db)
 
 	router := setupRouter(db, config)
 	requestBody := strings.NewReader(`{"title": "","description":"test","image":"test.jpg","rating":8}`)
@@ -103,4 +107,168 @@ func TestCreateCakeFailed(t *testing.T) {
 
 	assert.Equal(t, 400, int(responseBody["code"].(float64)))
 	assert.Equal(t, "BAD REQUEST ERROR", responseBody["status"])
+}
+
+func TestGetCakeByIdSuccess(t *testing.T) {
+	config := config.GetConfig()
+	db := setupTestDB(config)
+	truncateCake(db)
+	createCake(db)
+
+	router := setupRouter(db, config)
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/cakes/100", nil)
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("API-Key", config.API_KEY)
+
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+
+	assert.Equal(t, 200, response.StatusCode)
+
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 200, int(responseBody["code"].(float64)))
+	assert.Equal(t, "OK", responseBody["status"])
+	assert.Equal(t, "test cake", responseBody["data"].(map[string]interface{})["title"])
+}
+
+func TestGetCakeByIdFailed(t *testing.T) {
+	config := config.GetConfig()
+	db := setupTestDB(config)
+	truncateCake(db)
+	createCake(db)
+
+	router := setupRouter(db, config)
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/cakes/99", nil)
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("API-Key", config.API_KEY)
+
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+
+	assert.Equal(t, 404, response.StatusCode)
+
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 404, int(responseBody["code"].(float64)))
+	assert.Equal(t, "NOT FOUND ERROR", responseBody["status"])
+}
+
+func TestListCakeSuccess(t *testing.T) {
+	config := config.GetConfig()
+	db := setupTestDB(config)
+	truncateCake(db)
+	createCake(db)
+
+	router := setupRouter(db, config)
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/cakes", nil)
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("API-Key", config.API_KEY)
+
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+
+	assert.Equal(t, 200, response.StatusCode)
+
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	dataArray := responseBody["data"].([]interface{})
+	firstDataElement := dataArray[0].(map[string]interface{})
+
+	assert.Equal(t, 200, int(responseBody["code"].(float64)))
+	assert.Equal(t, "OK", responseBody["status"])
+	assert.Equal(t, "test cake", firstDataElement["title"])
+}
+
+func TestListCakeEmpty(t *testing.T) {
+	config := config.GetConfig()
+	db := setupTestDB(config)
+	truncateCake(db)
+
+	router := setupRouter(db, config)
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/cakes", nil)
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("API-Key", config.API_KEY)
+
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+
+	assert.Equal(t, 200, response.StatusCode)
+
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	dataArray := responseBody["data"].([]interface{})
+
+	assert.Equal(t, 200, int(responseBody["code"].(float64)))
+	assert.Equal(t, "OK", responseBody["status"])
+	assert.Equal(t, 0, len(dataArray))
+}
+
+func TestDeleteCakeByIdSuccess(t *testing.T) {
+	config := config.GetConfig()
+	db := setupTestDB(config)
+	truncateCake(db)
+	createCake(db)
+
+	router := setupRouter(db, config)
+	request := httptest.NewRequest(http.MethodDelete, "http://localhost:3000/api/cakes/100", nil)
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("API-Key", config.API_KEY)
+
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+
+	assert.Equal(t, 200, response.StatusCode)
+
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 200, int(responseBody["code"].(float64)))
+	assert.Equal(t, "OK", responseBody["status"])
+	assert.Equal(t, true, responseBody["data"].(bool))
+}
+
+func TestDeleteCakeByIdFailed(t *testing.T) {
+	config := config.GetConfig()
+	db := setupTestDB(config)
+	truncateCake(db)
+	createCake(db)
+
+	router := setupRouter(db, config)
+	request := httptest.NewRequest(http.MethodDelete, "http://localhost:3000/api/cakes/99", nil)
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("API-Key", config.API_KEY)
+
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+
+	assert.Equal(t, 404, response.StatusCode)
+
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 404, int(responseBody["code"].(float64)))
+	assert.Equal(t, "NOT FOUND ERROR", responseBody["status"])
 }
