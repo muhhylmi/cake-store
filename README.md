@@ -11,6 +11,14 @@ Hello this is Cake Store API build with golang
 - run `go mod tidy`
 - run `go run main.go`
 
+## Run Project Using Docker Container
+- Create mysql docker container as the db `docker pull (mysql_image)`
+- Create network `docker network create {network_name}`
+- Assignt db container to network `docker connect {network_name} {container_name}`
+- create golang app iamge `docker build -t {image_name} .`
+- create golang app container with env and network `docker run -d -p 3000:3000 --name {container_name} --env-file {env_file_name} --network {network_name}{image_name}`
+- access the API using [http://localhost:3000](http://localhost:3000/)
+
 ## List Cake
 
 Endpoint : GET /api/cake/
