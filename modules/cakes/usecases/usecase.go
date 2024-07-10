@@ -29,10 +29,9 @@ type Usecases interface {
 	List(ctx context.Context) []web.CakeResponse
 }
 
-func NewUsecase(config *config.Configurations, logger *logger.Logger, repository repositories.Repository) Usecases {
+func NewUsecase(logger *logger.Logger, repository repositories.Repository) Usecases {
 	return &UsecaseImpl{
 		Logger:     logger,
 		Repository: repository,
-		Config:     config,
 	}
 }

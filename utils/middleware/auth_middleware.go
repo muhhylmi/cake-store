@@ -16,7 +16,7 @@ func NewAuthMiddleware(handler http.Handler, config *config.Configurations) *Aut
 }
 
 func (middleware *AuthMiddleware) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	if request.Header.Get("API-Key") == config.GetConfig().API_KEY {
+	if request.Header.Get("API-Key") == middleware.Config.API_KEY {
 		middleware.Handler.ServeHTTP(writer, request)
 	} else {
 		writer.Header().Set("Content-Type", "application/json")

@@ -30,7 +30,7 @@ func main() {
 	db := database.NewDB(&dbVar)
 
 	cakeRepo := repository.NewRepository(logger, db)
-	cakeUseCase := usecase.NewUsecase(config, logger, cakeRepo)
+	cakeUseCase := usecase.NewUsecase(logger, cakeRepo)
 	cakeHandler := handlers.NewCakeHandler(logger, cakeUseCase, validate)
 	router := cakes.NewRouter(cakeHandler)
 
