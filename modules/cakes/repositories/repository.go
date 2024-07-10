@@ -18,6 +18,7 @@ type Repository interface {
 
 	//Query
 	FindById(ctx context.Context, id int) (*domain.Cake, error)
+	List(ctx context.Context) ([]domain.Cake, error)
 }
 
 func NewRepository(logger *logger.Logger, DB *sql.DB) Repository {

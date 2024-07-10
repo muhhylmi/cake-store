@@ -3,6 +3,7 @@ package repositories
 import (
 	"cake-store/modules/cakes/models/domain"
 	"cake-store/utils/database"
+	"cake-store/utils/wrapper"
 	"context"
 	"errors"
 )
@@ -31,4 +32,26 @@ func (r *RepositoryImpl) FindById(ctx context.Context, cakeId int) (*domain.Cake
 	} else {
 		return &cake, errors.New("category is not found")
 	}
+}
+
+func (r *RepositoryImpl) List(ctx context.Context) ([]domain.Cake, error) {
+	tx, err := r.DB.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer database.CommitOrRollback(tx)
+
+	SQL := "select id, title, description, rating, image from cakes"
+	rows, err := tx.QueryContext(ctx, SQL)
+	wrapper.PanicIfError(err)
+	defer rows.Close()
+
+	var cakes []domain.Cake
+	for rows.Next() {
+		cake := domain.Cake{}
+		rows.Scan(&cake.Id, &cake.Title, &cake.Description, &cake.Rating, &cake.Image)
+		cakes = append(cakes, cake)
+	}
+
+	return cakes, nil
 }

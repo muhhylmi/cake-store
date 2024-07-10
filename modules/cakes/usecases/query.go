@@ -17,3 +17,24 @@ func (u *UsecaseImpl) FindById(ctx context.Context, req *web.CakeGetRequest) web
 
 	return web.ToModelResponse(cake)
 }
+
+func (u *UsecaseImpl) List(ctx context.Context) []web.CakeResponse {
+	l := u.Logger.LogWithContext(contextName, "List")
+	responses := []web.CakeResponse{}
+
+	cakes, err := u.Repository.List(ctx)
+	if err != nil {
+		l.Error(err)
+	}
+
+	for _, cake := range cakes {
+		responses = append(responses, web.CakeResponse{
+			Id:          cake.Id,
+			Title:       cake.Title,
+			Description: cake.Description,
+			Rating:      cake.Rating,
+			Image:       cake.Image,
+		})
+	}
+	return responses
+}

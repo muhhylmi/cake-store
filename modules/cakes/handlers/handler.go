@@ -23,6 +23,7 @@ type CakeHandler interface {
 
 	//Query
 	FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
+	List(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 }
 
 func NewCakeHandler(logger *logger.Logger, usecase usecases.Usecases, validate *validator.Validate) CakeHandler {

@@ -37,3 +37,14 @@ func (handler *HandlerImpl) FindById(writer http.ResponseWriter, request *http.R
 
 	wrapper.WriteToResponseBody(writer, webResponse)
 }
+
+func (handler *HandlerImpl) List(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	categoryResponses := handler.Usecase.List(request.Context())
+	webResponse := wrapper.WebResponse{
+		Code:   200,
+		Status: "OK",
+		Data:   categoryResponses,
+	}
+
+	wrapper.WriteToResponseBody(writer, webResponse)
+}
