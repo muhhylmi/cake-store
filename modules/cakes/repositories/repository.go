@@ -14,7 +14,8 @@ type RepositoryImpl struct {
 
 type Repository interface {
 	//command
-	Save(ctx context.Context, category domain.Cake) (*domain.Cake, error)
+	Save(ctx context.Context, cake domain.Cake) (*domain.Cake, error)
+	Update(ctx context.Context, cake domain.Cake) (*domain.Cake, error)
 
 	//Query
 	FindById(ctx context.Context, id int) (*domain.Cake, error)

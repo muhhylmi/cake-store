@@ -4,6 +4,7 @@ import (
 	"cake-store/modules/cakes/models/web"
 	"cake-store/utils/wrapper"
 	"net/http"
+	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -16,14 +17,44 @@ func (handler *HandlerImpl) Create(writer http.ResponseWriter, request *http.Req
 	err := handler.Validate.Struct(categoryCreateRequest)
 	if err != nil {
 		l.Error(err.Error())
-		wrapper.PanicIfError(err)
+		panic(err)
 	}
 
-	categoryResponse := handler.Usecase.Create(request.Context(), categoryCreateRequest)
+	cakeResponse := handler.Usecase.Create(request.Context(), categoryCreateRequest)
 	webResponse := wrapper.WebResponse{
 		Code:   201,
 		Status: "OK",
-		Data:   categoryResponse,
+		Data:   cakeResponse,
+	}
+
+	wrapper.WriteToResponseBody(writer, webResponse)
+}
+
+func (handler *HandlerImpl) Update(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	l := handler.Logger.LogWithContext(context, "Update")
+
+	cakeUpdateRequest := web.CakeUpdateRequest{}
+	wrapper.ReadJsonFromRequest(request, &cakeUpdateRequest)
+
+	cakeId := params.ByName("cakeId")
+	id, err := strconv.Atoi(cakeId)
+	if err != nil {
+		l.Error(err)
+		panic(err)
+	}
+	cakeUpdateRequest.Id = id
+
+	err = handler.Validate.Struct(cakeUpdateRequest)
+	if err != nil {
+		l.Error(err)
+		panic(err)
+	}
+
+	cakeResponse := handler.Usecase.Update(request.Context(), &cakeUpdateRequest)
+	webResponse := wrapper.WebResponse{
+		Code:   200,
+		Status: "OK",
+		Data:   cakeResponse,
 	}
 
 	wrapper.WriteToResponseBody(writer, webResponse)
