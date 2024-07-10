@@ -272,3 +272,83 @@ func TestDeleteCakeByIdFailed(t *testing.T) {
 	assert.Equal(t, 404, int(responseBody["code"].(float64)))
 	assert.Equal(t, "NOT FOUND ERROR", responseBody["status"])
 }
+
+func TestUpdateCakeSuccess(t *testing.T) {
+	config := config.GetConfig()
+	db := setupTestDB(config)
+	truncateCake(db)
+	createCake(db)
+
+	router := setupRouter(db, config)
+	requestBody := strings.NewReader(`{"title": "test update"}`)
+	request := httptest.NewRequest(http.MethodPatch, "http://localhost:3000/api/cakes/100", requestBody)
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("API-Key", config.API_KEY)
+
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+
+	assert.Equal(t, 200, response.StatusCode)
+
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 200, int(responseBody["code"].(float64)))
+	assert.Equal(t, "OK", responseBody["status"])
+	assert.Equal(t, "test update", responseBody["data"].(map[string]interface{})["title"])
+}
+
+func TestUpdateCakeFailed(t *testing.T) {
+	config := config.GetConfig()
+	db := setupTestDB(config)
+	truncateCake(db)
+	createCake(db)
+
+	router := setupRouter(db, config)
+	requestBody := strings.NewReader(`{"title": "test update","description":"test","image":"test.jpg","rating":8}`)
+	request := httptest.NewRequest(http.MethodPatch, "http://localhost:3000/api/cakes/99", requestBody)
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("API-Key", config.API_KEY)
+
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+
+	assert.Equal(t, 404, response.StatusCode)
+
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 404, int(responseBody["code"].(float64)))
+	assert.Equal(t, "NOT FOUND ERROR", responseBody["status"])
+}
+
+func TestUnauthorized(t *testing.T) {
+	config := config.GetConfig()
+	db := setupTestDB(config)
+	truncateCake(db)
+	createCake(db)
+
+	router := setupRouter(db, config)
+	request := httptest.NewRequest(http.MethodDelete, "http://localhost:3000/api/cakes/100", nil)
+	request.Header.Add("Content-Type", "application/json")
+
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+
+	assert.Equal(t, 401, response.StatusCode)
+
+	body, _ := io.ReadAll(response.Body)
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 401, int(responseBody["code"].(float64)))
+	assert.Equal(t, "UNAUTHORIZED", responseBody["status"])
+}
