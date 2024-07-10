@@ -59,3 +59,22 @@ func (handler *HandlerImpl) Update(writer http.ResponseWriter, request *http.Req
 
 	wrapper.WriteToResponseBody(writer, webResponse)
 }
+
+func (handler *HandlerImpl) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	l := handler.Logger.LogWithContext(context, "Delete")
+
+	cakeId := params.ByName("cakeId")
+	id, err := strconv.Atoi(cakeId)
+	if err != nil {
+		l.Error(err)
+		panic(err)
+	}
+	res := handler.Usecase.Delete(request.Context(), id)
+	webResponse := wrapper.WebResponse{
+		Code:   200,
+		Status: "OK",
+		Data:   res,
+	}
+
+	wrapper.WriteToResponseBody(writer, webResponse)
+}

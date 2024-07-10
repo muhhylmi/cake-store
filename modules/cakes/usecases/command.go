@@ -37,3 +37,21 @@ func (usecase *UsecaseImpl) Update(ctx context.Context, request *web.CakeUpdateR
 
 	return web.ToModelResponse(cake)
 }
+
+func (usecase *UsecaseImpl) Delete(ctx context.Context, cakeId int) bool {
+	l := usecase.Logger.LogWithContext(contextName, "Delete")
+
+	cake, err := usecase.Repository.FindById(ctx, cakeId)
+	if err != nil {
+		l.Error(err)
+		panic(wrapper.NewNotFoundError(err.Error()))
+	}
+
+	err = usecase.Repository.Delete(ctx, *cake)
+	if err != nil {
+		l.Error(err)
+		panic(wrapper.NewConflictError(err.Error()))
+	}
+
+	return true
+}

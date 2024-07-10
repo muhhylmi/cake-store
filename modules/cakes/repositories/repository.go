@@ -7,6 +7,8 @@ import (
 	"database/sql"
 )
 
+const contextName = "module.cake.repositories"
+
 type RepositoryImpl struct {
 	Logger *logger.Logger
 	DB     *sql.DB
@@ -16,6 +18,7 @@ type Repository interface {
 	//command
 	Save(ctx context.Context, cake domain.Cake) (*domain.Cake, error)
 	Update(ctx context.Context, cake domain.Cake) (*domain.Cake, error)
+	Delete(ctx context.Context, cake domain.Cake) error
 
 	//Query
 	FindById(ctx context.Context, id int) (*domain.Cake, error)

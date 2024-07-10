@@ -22,6 +22,7 @@ type Usecases interface {
 	//Command
 	Create(ctx context.Context, payload *web.CakeCreateRequest) web.CakeResponse
 	Update(ctx context.Context, payload *web.CakeUpdateRequest) web.CakeResponse
+	Delete(ctx context.Context, cakeId int) bool
 
 	//Query
 	FindById(ctx context.Context, payload *web.CakeGetRequest) web.CakeResponse

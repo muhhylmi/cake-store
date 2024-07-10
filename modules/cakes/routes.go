@@ -14,6 +14,7 @@ func NewRouter(cakeHandler handlers.CakeHandler) *httprouter.Router {
 	router.GET("/api/cakes", cakeHandler.List)
 	router.GET("/api/cakes/:cakeId", cakeHandler.FindById)
 	router.PATCH("/api/cakes/:cakeId", cakeHandler.Update)
+	router.DELETE("/api/cakes/:cakeId", cakeHandler.Delete)
 
 	router.PanicHandler = wrapper.ErrorHandler
 

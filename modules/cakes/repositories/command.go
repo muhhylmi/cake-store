@@ -8,8 +8,11 @@ import (
 )
 
 func (r *RepositoryImpl) Save(ctx context.Context, cake domain.Cake) (*domain.Cake, error) {
+	l := r.Logger.LogWithContext(contextName, "Save")
+
 	tx, err := r.DB.Begin()
 	if err != nil {
+		l.Error(err)
 		return nil, err
 	}
 	defer database.CommitOrRollback(tx)
@@ -17,11 +20,13 @@ func (r *RepositoryImpl) Save(ctx context.Context, cake domain.Cake) (*domain.Ca
 	SQL := "insert into cakes(title,description,rating,image) values (?,?,?,?)"
 	result, err := tx.ExecContext(ctx, SQL, cake.Title, cake.Description, cake.Rating, cake.Image)
 	if err != nil {
+		l.Error(err)
 		return nil, err
 	}
 
 	id, err := result.LastInsertId()
 	if err != nil {
+		l.Error(err)
 		return nil, err
 	}
 
@@ -31,8 +36,11 @@ func (r *RepositoryImpl) Save(ctx context.Context, cake domain.Cake) (*domain.Ca
 }
 
 func (r *RepositoryImpl) Update(ctx context.Context, cake domain.Cake) (*domain.Cake, error) {
+	l := r.Logger.LogWithContext(contextName, "Update")
+
 	tx, err := r.DB.Begin()
 	if err != nil {
+		l.Error(err)
 		return nil, err
 	}
 	defer database.CommitOrRollback(tx)
@@ -42,4 +50,23 @@ func (r *RepositoryImpl) Update(ctx context.Context, cake domain.Cake) (*domain.
 	wrapper.PanicIfError(err)
 
 	return &cake, nil
+}
+
+func (r *RepositoryImpl) Delete(ctx context.Context, cake domain.Cake) error {
+	l := r.Logger.LogWithContext(contextName, "Delete")
+
+	tx, err := r.DB.Begin()
+	if err != nil {
+		l.Error(err)
+		return err
+	}
+	defer database.CommitOrRollback(tx)
+
+	SQL := "delete from cakes where id = ?"
+	_, err = tx.ExecContext(ctx, SQL, cake.Id)
+	if err != nil {
+		l.Error(err)
+		return err
+	}
+	return nil
 }
