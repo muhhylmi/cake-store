@@ -45,8 +45,8 @@ func (r *RepositoryImpl) Update(ctx context.Context, cake domain.Cake) (*domain.
 	}
 	defer database.CommitOrRollback(tx)
 
-	SQL := "update cakes set title = ?, description = ?, rating = ?, image = ?  where id = ?"
-	_, err = tx.ExecContext(ctx, SQL, cake.Title, cake.Description, cake.Rating, cake.Image, cake.Id)
+	SQL := "update cakes set title = ?, description = ?, rating = ?, image = ?, updated_at = ?  where id = ?"
+	_, err = tx.ExecContext(ctx, SQL, cake.Title, cake.Description, cake.Rating, cake.Image, cake.UpdatedAt, cake.Id)
 	wrapper.PanicIfError(err)
 
 	return &cake, nil
