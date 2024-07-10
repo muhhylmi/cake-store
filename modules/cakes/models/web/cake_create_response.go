@@ -2,16 +2,8 @@ package web
 
 import "cake-store/modules/cakes/models/domain"
 
-type CakeCreateResponse struct {
-	Id          int     `json:"id"`
-	Title       string  `json:"title"`
-	Description string  `json:"description"`
-	Rating      float64 `json:"rating"`
-	Image       string  `json:"image"`
-}
-
-func ToModelResponse(c *domain.Cake) CakeCreateResponse {
-	return CakeCreateResponse{
+func ToModelResponse(c *domain.Cake) CakeResponse {
+	return CakeResponse{
 		Id:          c.Id,
 		Title:       c.Title,
 		Description: c.Description,

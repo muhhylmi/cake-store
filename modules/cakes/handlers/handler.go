@@ -18,7 +18,11 @@ type HandlerImpl struct {
 }
 
 type CakeHandler interface {
+	//Command
 	Create(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
+
+	//Query
+	FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 }
 
 func NewCakeHandler(logger *logger.Logger, usecase usecases.Usecases, validate *validator.Validate) CakeHandler {

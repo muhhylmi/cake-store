@@ -19,7 +19,11 @@ type UsecaseImpl struct {
 }
 
 type Usecases interface {
-	Create(ctx context.Context, payload *web.CakeCreateRequest) web.CakeCreateResponse
+	//Command
+	Create(ctx context.Context, payload *web.CakeCreateRequest) web.CakeResponse
+
+	//Query
+	FindById(ctx context.Context, payload *web.CakeGetRequest) web.CakeResponse
 }
 
 func NewUsecase(config *config.Configurations, logger *logger.Logger, repository repositories.Repository) Usecases {

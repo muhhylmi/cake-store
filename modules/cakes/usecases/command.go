@@ -6,7 +6,7 @@ import (
 	"context"
 )
 
-func (usecase *UsecaseImpl) Create(ctx context.Context, payload *web.CakeCreateRequest) web.CakeCreateResponse {
+func (usecase *UsecaseImpl) Create(ctx context.Context, payload *web.CakeCreateRequest) web.CakeResponse {
 	log := usecase.Logger.LogWithContext(contextName, "CreateCart")
 	cakeData := payload.ToModel()
 
