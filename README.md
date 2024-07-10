@@ -2,14 +2,21 @@
 Hello this is Cake Store API build with golang 
 
 ## How to Run The Project
+- install [golang-migrate](https://github.com/golang-migrate/migrate/tree/master/database/postgres) using go install -tags 'database1,database2' github.com/golang-migrate/migrate/v4/cmd/migrate@latest 
+    - example: `go install -tags 'postgres,mysql' github.com/golang-migrate/migrate/v4/cmd/migrate@latest` 
+
 - ### Run Database Migrations
     - Create Database
-    - run `migrate -database "mysql://user:password@tcp(host:port)/db-name" -path migrations up`
-- 
+    - run `migrate -database "mysql://user:password@tcp(host:port)/db-name" -path migration_path up`
+- run `go mod tidy`
+- run `go run main.go`
 
 ## List Cake
 
 Endpoint : GET /api/cake/
+
+Headers :
+- api-key: token
 
 Response Body :
 
@@ -36,6 +43,9 @@ Response Body :
 
 Endpoint : GET /api/cake/:cakeId
 
+Headers :
+- api-key: token
+
 Response Body :
 
 ```json
@@ -57,6 +67,9 @@ Response Body :
 ## Create Cake
 
 Endpoint : POST /api/cake
+
+Headers :
+- api-key: token
 
 Request Body :
 
@@ -91,6 +104,9 @@ Response Body :
 
 Endpoint : PATCH /api/cake/:cakeId
 
+Headers :
+- api-key: token
+
 Request Body :
 
 ```json
@@ -123,6 +139,9 @@ Response Body :
 ## Delete Cake
 
 Endpoint : DELETE /api/cake/:cakeId
+
+Headers :
+- api-key: token
 
 Request Body :
 
