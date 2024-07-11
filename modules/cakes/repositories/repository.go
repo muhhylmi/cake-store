@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"cake-store/modules/cakes/models/domain"
+	"cake-store/modules/cakes/models/web"
 	"cake-store/utils/logger"
 	"context"
 	"database/sql"
@@ -22,7 +23,7 @@ type Repository interface {
 
 	//Query
 	FindById(ctx context.Context, id int) (*domain.Cake, error)
-	List(ctx context.Context) ([]domain.Cake, error)
+	List(ctx context.Context, req *web.CakeListRequest) ([]domain.Cake, error)
 }
 
 func NewRepository(logger *logger.Logger, DB *sql.DB) Repository {

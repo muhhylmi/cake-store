@@ -2,10 +2,11 @@ package repositories
 
 import (
 	"cake-store/modules/cakes/models/domain"
+	"cake-store/modules/cakes/models/web"
 	"cake-store/utils/database"
-	"cake-store/utils/wrapper"
 	"context"
 	"errors"
+	"fmt"
 )
 
 func (r *RepositoryImpl) FindById(ctx context.Context, cakeId int) (*domain.Cake, error) {
@@ -34,16 +35,30 @@ func (r *RepositoryImpl) FindById(ctx context.Context, cakeId int) (*domain.Cake
 	}
 }
 
-func (r *RepositoryImpl) List(ctx context.Context) ([]domain.Cake, error) {
+func (r *RepositoryImpl) List(ctx context.Context, req *web.CakeListRequest) ([]domain.Cake, error) {
+	l := r.Logger.LogWithContext(contextName, "List")
+
 	tx, err := r.DB.Begin()
 	if err != nil {
 		return nil, err
 	}
 	defer database.CommitOrRollback(tx)
 
+	var args []interface{}
 	SQL := "select id, title, description, rating, image from cakes"
-	rows, err := tx.QueryContext(ctx, SQL)
-	wrapper.PanicIfError(err)
+	if req.Keyword != "" {
+		SQL += " where title like ?"
+		args = append(args, fmt.Sprintf("%%%s%%", req.Keyword))
+	}
+	SQL += " order by created_at limit ? offset ?"
+	skip := (req.Page - 1) * req.Size
+	args = append(args, req.Size, skip)
+
+	rows, err := tx.QueryContext(ctx, SQL, args...)
+	if err != nil {
+		l.Error(err.Error())
+		return nil, err
+	}
 	defer rows.Close()
 
 	var cakes []domain.Cake

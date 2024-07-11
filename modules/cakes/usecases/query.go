@@ -18,11 +18,11 @@ func (u *UsecaseImpl) FindById(ctx context.Context, req *web.CakeGetRequest) web
 	return web.ToModelResponse(cake)
 }
 
-func (u *UsecaseImpl) List(ctx context.Context) []web.CakeResponse {
+func (u *UsecaseImpl) List(ctx context.Context, req *web.CakeListRequest) []web.CakeResponse {
 	l := u.Logger.LogWithContext(contextName, "List")
 	responses := []web.CakeResponse{}
 
-	cakes, err := u.Repository.List(ctx)
+	cakes, err := u.Repository.List(ctx, req)
 	if err != nil {
 		l.Error(err)
 	}

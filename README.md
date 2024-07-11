@@ -26,6 +26,11 @@ Endpoint : GET /api/cake/
 Headers :
 - api-key: token
 
+Params :
+- q: string (optional)
+- page: int (optional)
+- size: int (optional)
+
 Response Body :
 
 ```json

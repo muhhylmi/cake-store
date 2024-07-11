@@ -26,7 +26,7 @@ type Usecases interface {
 
 	//Query
 	FindById(ctx context.Context, payload *web.CakeGetRequest) web.CakeResponse
-	List(ctx context.Context) []web.CakeResponse
+	List(ctx context.Context, req *web.CakeListRequest) []web.CakeResponse
 }
 
 func NewUsecase(logger *logger.Logger, repository repositories.Repository) Usecases {
